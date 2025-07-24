@@ -6,6 +6,7 @@ defmodule MyProject.Dashboards.Dashboard do
     field :description, :string
     field :title, :string
 
+
     timestamps(type: :utc_datetime)
   end
 

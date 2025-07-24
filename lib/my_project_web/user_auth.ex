@@ -33,7 +33,7 @@ defmodule MyProjectWeb.UserAuth do
       cond do
         user_return_to -> user_return_to
         user.role == "admin" -> ~p"/admin/dashboard"
-        user.role == "user" -> ~p"/dashboard"
+        user.role == "user" -> ~p"/users/dashboard"
         true -> ~p"/"
       end
     conn

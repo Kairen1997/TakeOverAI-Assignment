@@ -83,8 +83,8 @@ defmodule MyProjectWeb.Router do
 
     delete "/users/log_out", UserSessionController, :delete
 
-    # Add this route outside of live_session so path helpers are generated
-    live "/users/confirm/:token", UserConfirmationLive, :edit
+    live "/confirm/:token", UserConfirmationLive, :edit
+    live "/confirm", UserConfirmationInstructionsLive, :new
 
   end
 
