@@ -16,6 +16,11 @@ defmodule MyProjectWeb.Router do
   pipeline :api do
     plug :accepts, ["json"]
   end
+  pipeline :authenticated do
+    plug :require_authenticated_user
+    plug :put_layout, html: {MyProjectWeb.Layouts, :app}
+  end
+
 
   scope "/", MyProjectWeb do
     pipe_through :browser
@@ -71,7 +76,7 @@ defmodule MyProjectWeb.Router do
     end
   end
 
-  scope "/", MyProjectWeb do
+    scope "/", MyProjectWeb do
     pipe_through [:browser, :require_authenticated_user]
 
     live "/dashboards", DashboardLive.Index, :index
@@ -83,20 +88,21 @@ defmodule MyProjectWeb.Router do
 
     delete "/users/log_out", UserSessionController, :delete
 
-    live "/confirm/:token", UserConfirmationLive, :edit
+    live "/users/confirm/:token", UserConfirmationLive, :edit
     live "/confirm", UserConfirmationInstructionsLive, :new
 
   end
 
   scope "/admin", MyProjectWeb do
-    pipe_through [:browser, :require_authenticated_user, :admin_only]
+    pipe_through [:browser, :require_authenticated_user]
 
     live "/dashboard", AdminDashboardLive, :index
   end
 
   scope "/users", MyProjectWeb do
-    pipe_through [:browser, :require_authenticated_user, :user_only]
+    pipe_through [:browser, :require_authenticated_user]
 
     live "/dashboard", UserDashboardLive, :index
   end
+
 end

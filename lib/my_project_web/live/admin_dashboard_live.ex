@@ -1,6 +1,8 @@
 defmodule MyProjectWeb.AdminDashboardLive do
   use MyProjectWeb, :live_view
 
+  on_mount {MyProjectWeb.UserAuth, :mount_current_user}
+
   def render(assigns) do
     ~H"""
     <div class="p-6">

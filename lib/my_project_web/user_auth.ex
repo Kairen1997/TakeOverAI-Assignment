@@ -98,9 +98,13 @@ defmodule MyProjectWeb.UserAuth do
   and remember me token.
   """
   def fetch_current_user(conn, _opts) do
+    import Plug.Conn
+
     {user_token, conn} = ensure_user_token(conn)
     user = user_token && Accounts.get_user_by_session_token(user_token)
-    assign(conn, :current_user, user)
+    conn
+    |> assign(:current_user, user)
+    |> assign(:current_path, current_path(conn))
   end
 
   defp ensure_user_token(conn) do
@@ -182,10 +186,14 @@ defmodule MyProjectWeb.UserAuth do
   end
 
   defp mount_current_user(socket, session) do
-    Phoenix.Component.assign_new(socket, :current_user, fn ->
+    socket
+    |> Phoenix.Component.assign_new(:current_user, fn ->
       if user_token = session["user_token"] do
         Accounts.get_user_by_session_token(user_token)
       end
+    end)
+    |> Phoenix.Component.assign_new(:current_path, fn ->
+      socket.assigns[:uri] || "/"
     end)
   end
 
@@ -253,7 +261,13 @@ defmodule MyProjectWeb.UserAuth do
     put_session(conn, :user_return_to, current_path(conn))
   end
 
-  defp maybe_store_return_to(conn), do: conn
+  def get_current_user(session) do
+    if token = session["user_token"] do
+      MyProject.Accounts.get_user_by_session_token(token)
+    else
+      nil
+    end
+  end
 
   defp signed_in_path(_conn), do: ~p"/"
 end
