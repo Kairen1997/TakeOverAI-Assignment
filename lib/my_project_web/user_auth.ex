@@ -269,5 +269,11 @@ defmodule MyProjectWeb.UserAuth do
     end
   end
 
-  defp signed_in_path(_conn), do: ~p"/"
+  defp signed_in_path(conn) do
+    case conn.assigns[:current_user] do
+      %{role: "admin"} -> ~p"/admin/dashboard"
+      %{role: "user"} -> ~p"/users/dashboard"
+      _ -> ~p"/"
+    end
+  end
 end

@@ -1,53 +1,68 @@
 <div class="flex h-screen bg-gray-50">
   <%= if assigns[:current_user] do %>
     <!-- Sidebar -->
-    <div class="w-64 bg-white shadow-lg border-r border-blue-200">
+    <div class="w-64  shadow-lg border-r border-blue-200">
       <div class="flex flex-col h-full">
         <!-- Sidebar Header -->
-        <div class="flex items-center justify-center h-16 px-4 border-b border-gray-200">
+        <div class="flex items-center justify-center h-16 px-4 border-b border-gray-200 bg-yellow-100">
           <a href="/" class="flex items-center space-x-2">
             <img src={~p"/images/logo.svg"} width="24" />
             <span class="text-lg font-semibold text-gray-900">MyProject</span>
           </a>
         </div>
-        
+
         <!-- Sidebar Navigation -->
-        <nav class="flex-1 px-4 py-6 space-y-2">
-          <a 
-            href={~p"/dashboards"} 
-            class="flex items-center px-3 py-2 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-100 hover:text-gray-900 transition-colors duration-200"
+        <nav class="flex-1 px-4 py-6 space-y-2 bg-blue-100">
+          <a
+            href={~p"/dashboards"}
+            class={
+              "flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors duration-200 " <>
+              if @socket.view == MyProjectWeb.DashboardLive.Index or @socket.view == MyProjectWeb.DashboardLive.Show,
+                do: "bg-blue-600 text-white border-l-4 border-blue-700",
+                else: "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+            }
           >
             <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
             </svg>
             Dashboard
           </a>
-          
-          <a 
-            href={~p"/users/settings"} 
-            class="flex items-center px-3 py-2 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-100 hover:text-gray-900 transition-colors duration-200"
+
+          <a
+            href={~p"/users/settings"}
+            class={
+              "flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors duration-200 " <>
+              if @socket.view == MyProjectWeb.UserSettingsLive,
+                do: "bg-blue-600 text-white border-l-4 border-blue-700",
+                else: "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+            }
           >
             <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
             </svg>
             Profile
           </a>
-          
+
           <%= if @current_user.role == "admin" do %>
-            <a 
-              href={~p"/admin/dashboard"} 
-              class="flex items-center px-3 py-2 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-100 hover:text-gray-900 transition-colors duration-200"
+            <a
+              href={~p"/admin/dashboard"}
+              class={
+                "flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors duration-200 " <>
+                if @socket.view == MyProjectWeb.AdminDashboardLive,
+                  do: "bg-blue-600 text-white border-l-4 border-blue-700",
+                  else: "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+              }
             >
               <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4" />
               </svg>
               Admin
             </a>
           <% end %>
         </nav>
-        
+
         <!-- Sidebar Footer -->
-        <div class="p-4 border-t border-gray-200">
+        <div class="p-4 border-t border-gray-200 bg-green-200 ">
           <div class="flex items-center justify-between">
             <div class="flex items-center space-x-2">
               <div class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
@@ -64,35 +79,12 @@
       </div>
     </div>
   <% end %>
-  
+
   <!-- Main Content -->
   <div class={if assigns[:current_user], do: "flex-1 flex flex-col overflow-hidden", else: "w-full flex flex-col overflow-hidden"}>
-    <!-- Top Header -->
-    <header class="bg-white shadow-sm border-b border-gray-200">
-      <div class="flex items-center justify-between px-6 py-4">
-        <div class="flex items-center space-x-4">
-          <h1 class="text-xl font-semibold text-gray-900">
-            <%= assigns[:page_title] || "Dashboard" %>
-          </h1>
-        </div>
-        <div class="flex items-center space-x-4">
-          <%= if assigns[:current_user] do %>
-            <.link
-              href={~p"/users/log_out"}
-              method="delete"
-              class="text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors duration-200"
-            >
-              Log out
-            </.link>
-          <% end %>
-        </div>
-      </div>
-    </header>
-    
-    <!-- Main Content Area -->
     <main class="flex-1 overflow-y-auto bg-white-100">
       <div class="px-6 py-8">
-        <div class="max-w-7xl mx-auto">     
+        <div class="max-w-7xl mx-auto">
           <.flash_group flash={@flash} />
           {@inner_content}
         </div>
