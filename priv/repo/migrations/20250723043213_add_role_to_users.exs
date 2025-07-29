@@ -5,6 +5,5 @@ defmodule MyProject.Repo.Migrations.AddRoleToUsers do
     alter table(:users) do
       add :role, :string, null: false, default: "nil"
     end
-
   end
 end

@@ -3,6 +3,7 @@ defmodule MyProjectWeb.UserSettingsLive do
 
   alias MyProject.Accounts
 
+  @impl true
   def render(assigns) do
     ~H"""
     <.header class="text-center">
@@ -73,6 +74,7 @@ defmodule MyProjectWeb.UserSettingsLive do
     """
   end
 
+  @impl true
   def mount(%{"token" => token}, _session, socket) do
     socket =
       case Accounts.update_user_email(socket.assigns.current_user, token) do
@@ -86,6 +88,7 @@ defmodule MyProjectWeb.UserSettingsLive do
     {:ok, push_navigate(socket, to: ~p"/users/settings")}
   end
 
+  @impl true
   def mount(_params, _session, socket) do
     user = socket.assigns.current_user
     email_changeset = Accounts.change_user_email(user)
@@ -99,6 +102,7 @@ defmodule MyProjectWeb.UserSettingsLive do
       |> assign(:email_form, to_form(email_changeset))
       |> assign(:password_form, to_form(password_changeset))
       |> assign(:trigger_submit, false)
+      |> assign(:show_admin_submenu, false)
 
     {:ok, socket}
   end
@@ -163,5 +167,10 @@ defmodule MyProjectWeb.UserSettingsLive do
       {:error, changeset} ->
         {:noreply, assign(socket, password_form: to_form(changeset))}
     end
+  end
+
+  @impl true
+  def handle_event("toggle_admin_submenu", _params, socket) do
+    {:noreply, assign(socket, show_admin_submenu: !socket.assigns[:show_admin_submenu])}
   end
 end

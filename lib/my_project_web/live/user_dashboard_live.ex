@@ -7,6 +7,7 @@ defmodule MyProjectWeb.UserDashboardLive do
     ~H"""
     <div class="p-6">
       <h1 class="text-2xl font-bold mb-4">User Dashboard</h1>
+      
       <p>Welcome, regular user!</p>
     </div>
     """

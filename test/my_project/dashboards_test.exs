@@ -36,7 +36,9 @@ defmodule MyProject.DashboardsTest do
       dashboard = dashboard_fixture()
       update_attrs = %{description: "some updated description", title: "some updated title"}
 
-      assert {:ok, %Dashboard{} = dashboard} = Dashboards.update_dashboard(dashboard, update_attrs)
+      assert {:ok, %Dashboard{} = dashboard} =
+               Dashboards.update_dashboard(dashboard, update_attrs)
+
       assert dashboard.description == "some updated description"
       assert dashboard.title == "some updated title"
     end

@@ -16,11 +16,11 @@ defmodule MyProjectWeb.Router do
   pipeline :api do
     plug :accepts, ["json"]
   end
+
   pipeline :authenticated do
     plug :require_authenticated_user
     plug :put_layout, html: {MyProjectWeb.Layouts, :app}
   end
-
 
   scope "/", MyProjectWeb do
     pipe_through :browser
@@ -67,42 +67,28 @@ defmodule MyProjectWeb.Router do
   end
 
   scope "/", MyProjectWeb do
-    pipe_through [:browser, :require_authenticated_user]
+    pipe_through [:browser, :require_authenticated_user, :authenticated]
 
     live_session :require_authenticated_user,
       on_mount: [{MyProjectWeb.UserAuth, :ensure_authenticated}] do
+
+      live "/dashboards", DashboardLive.Index, :index
+      live "/dashboards/new", DashboardLive.Index, :new
+      live "/dashboards/:id/edit", DashboardLive.Index, :edit
+      live "/dashboards/:id", DashboardLive.Show, :show
+      live "/dashboards/:id/show/edit", DashboardLive.Show, :edit
+
+      live "/users/confirm/:token", UserConfirmationLive, :edit
+      live "/confirm", UserConfirmationInstructionsLive, :new
       live "/users/settings", UserSettingsLive, :edit
       live "/users/settings/confirm_email/:token", UserSettingsLive, :confirm_email
+
+      live "/admin/dashboard", AdminDashboardLive, :index
+      live "/admin/users", AdminUsersLive, :index
+
+      live "/users/dashboard", UserDashboardLive, :index
     end
-  end
-
-    scope "/", MyProjectWeb do
-    pipe_through [:browser, :require_authenticated_user]
-
-    live "/dashboards", DashboardLive.Index, :index
-    live "/dashboards/new", DashboardLive.Index, :new
-    live "/dashboards/:id/edit", DashboardLive.Index, :edit
-
-    live "/dashboards/:id", DashboardLive.Show, :show
-    live "/dashboards/:id/show/edit", DashboardLive.Show, :edit
 
     delete "/users/log_out", UserSessionController, :delete
-
-    live "/users/confirm/:token", UserConfirmationLive, :edit
-    live "/confirm", UserConfirmationInstructionsLive, :new
-
   end
-
-  scope "/admin", MyProjectWeb do
-    pipe_through [:browser, :require_authenticated_user]
-
-    live "/dashboard", AdminDashboardLive, :index
-  end
-
-  scope "/users", MyProjectWeb do
-    pipe_through [:browser, :require_authenticated_user]
-
-    live "/dashboard", UserDashboardLive, :index
-  end
-
 end

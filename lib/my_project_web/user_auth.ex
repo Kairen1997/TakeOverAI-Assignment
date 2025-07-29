@@ -36,6 +36,7 @@ defmodule MyProjectWeb.UserAuth do
         user.role == "user" -> ~p"/users/dashboard"
         true -> ~p"/"
       end
+
     conn
     |> renew_session()
     |> put_token_in_session(token)
@@ -102,6 +103,7 @@ defmodule MyProjectWeb.UserAuth do
 
     {user_token, conn} = ensure_user_token(conn)
     user = user_token && Accounts.get_user_by_session_token(user_token)
+
     conn
     |> assign(:current_user, user)
     |> assign(:current_path, current_path(conn))
@@ -230,6 +232,7 @@ defmodule MyProjectWeb.UserAuth do
 
   def admin_only(conn, _opts) do
     user = conn.assigns[:current_user]
+
     if user && user.role == "admin" do
       conn
     else
@@ -249,7 +252,6 @@ defmodule MyProjectWeb.UserAuth do
       |> halt()
     end
   end
-
 
   defp put_token_in_session(conn, token) do
     conn

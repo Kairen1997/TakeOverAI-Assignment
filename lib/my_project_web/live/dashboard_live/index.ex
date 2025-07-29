@@ -6,6 +6,7 @@ defmodule MyProjectWeb.DashboardLive.Index do
 
   @impl true
   def mount(_params, _session, socket) do
+    socket = assign(socket, :show_admin_submenu, false)
     {:ok, stream(socket, :dashboards, Dashboards.list_dashboards())}
   end
 
@@ -43,5 +44,10 @@ defmodule MyProjectWeb.DashboardLive.Index do
     {:ok, _} = Dashboards.delete_dashboard(dashboard)
 
     {:noreply, stream_delete(socket, :dashboards, dashboard)}
+  end
+
+  @impl true
+  def handle_event("toggle_admin_submenu", _params, socket) do
+    {:noreply, assign(socket, show_admin_submenu: !socket.assigns[:show_admin_submenu])}
   end
 end
