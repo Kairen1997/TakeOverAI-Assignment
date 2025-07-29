@@ -19,6 +19,13 @@ defmodule MyProjectWeb.CoreComponents do
 
   alias Phoenix.LiveView.JS
 
+  use Phoenix.VerifiedRoutes,
+    endpoint: MyProjectWeb.Endpoint,
+    router: MyProjectWeb.Router,
+    statics: MyProjectWeb.static_paths()
+
+  import Phoenix.VerifiedRoutes, only: [sigil_p: 2]
+
   @doc """
   Renders a modal.
 
@@ -672,5 +679,84 @@ defmodule MyProjectWeb.CoreComponents do
   """
   def translate_errors(errors, field) when is_list(errors) do
     for {^field, {msg, opts}} <- errors, do: translate_error({msg, opts})
+  end
+
+  @doc """
+  Renders a pagination component.
+
+  ## Examples
+
+      <.pagination page={1} total_pages={10} total_entries={100} page_size={10} />
+
+  """
+  attr :page, :integer, required: true
+  attr :total_pages, :integer, required: true
+  attr :total_entries, :integer, required: true
+  attr :page_size, :integer, required: true
+
+  def pagination(assigns) do
+    ~H"""
+    <div class="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6">
+      <div class="flex flex-1 justify-between sm:hidden">
+        <.link
+          :if={@page > 1}
+          navigate={~p"/dashboards?page=#{@page - 1}"}
+          class="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+        >
+          Previous
+        </.link>
+        <.link
+          :if={@page < @total_pages}
+          navigate={~p"/dashboards?page=#{@page + 1}"}
+          class="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+        >
+          Next
+        </.link>
+      </div>
+      <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+        <div>
+          <p class="text-sm text-gray-700">
+            Showing <span class="font-medium"><%= (@page - 1) * @page_size + 1 %></span> to <span class="font-medium"><%= min(@page * @page_size, @total_entries) %></span> of <span class="font-medium"><%= @total_entries %></span> results
+          </p>
+        </div>
+        <div>
+          <nav class="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
+            <.link
+              :if={@page > 1}
+              navigate={~p"/dashboards?page=#{@page - 1}"}
+              class="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+            >
+              <span class="sr-only">Previous</span>
+              <.icon name="hero-chevron-left-mini" class="h-5 w-5" />
+            </.link>
+
+            <%= for page_num <- max(1, @page - 2)..min(@total_pages, @page + 2) do %>
+              <.link
+                navigate={~p"/dashboards?page=#{page_num}"}
+                class={[
+                  "relative inline-flex items-center px-4 py-2 text-sm font-semibold",
+                  if(page_num == @page,
+                    do: "z-10 bg-indigo-600 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600",
+                    else: "text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+                  )
+                ]}
+              >
+                <%= page_num %>
+              </.link>
+            <% end %>
+
+            <.link
+              :if={@page < @total_pages}
+              navigate={~p"/dashboards?page=#{@page + 1}"}
+              class="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+            >
+              <span class="sr-only">Next</span>
+              <.icon name="hero-chevron-right-mini" class="h-5 w-5" />
+            </.link>
+          </nav>
+        </div>
+      </div>
+    </div>
+    """
   end
 end

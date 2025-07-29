@@ -13,13 +13,68 @@
 
         <!-- Sidebar Navigation -->
         <nav class="flex-1 px-4 py-6 space-y-2 bg-blue-100">
-          <a
-            href={~p"/dashboards"}
-            class={
-              "flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors duration-200 " <>
-              if @socket.view == MyProjectWeb.DashboardLive.Index or @socket.view == MyProjectWeb.DashboardLive.Show,
-                do: "bg-blue-600 text-white border-l-4 border-blue-700",
-                else: "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+          <%= if @current_user.role == "admin" do %>
+            <a
+              href={~p"/admin/dashboard"}
+              phx-click="update_path"
+              phx-value-path="Admin > Dashboard"
+              class={[
+                "flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors duration-200 ",
+                (if @socket.view == MyProjectWeb.AdminDashboardLive, do: "bg-blue-600 text-white border-l-4 border-blue-700", else: "text-gray-700 hover:bg-gray-100 hover:text-gray-900")
+              ]}
+            >
+              <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4" />
+              </svg>
+              Admin Dashboard
+            </a>
+            <button phx-click="toggle_admin_submenu" class="flex items-center justify-between w-full px-3 py-2 text-sm font-medium rounded-md transition-colors duration-200 text-gray-700 hover:bg-gray-100 hover:text-gray-900 mt-2">
+              <div class="flex items-center">
+                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+                Admin
+              </div>
+              <span><%= if assigns[:show_admin_submenu], do: "▲", else: "▼" %></span>
+            </button>
+            <ul :if={assigns[:show_admin_submenu] || String.starts_with?(@current_path || "", "Admin > Manage Users") || String.starts_with?(@current_path || "", "Dashboard")} class="ml-6 mt-2 space-y-1">
+              <li>
+                <a
+                  href={~p"/admin/users"}
+                  phx-click="update_path"
+                  phx-value-path="Admin > Manage Users"
+                  class={[
+                    "block px-3 py-2 text-sm rounded-md transition-colors",
+                    (if @socket.view == MyProjectWeb.AdminUsersLive, do: "bg-blue-300 font-semibold", else: "")
+                  ]}
+                >
+                  Manage Users
+                </a>
+              </li>
+              <li>
+                <a
+                  href={~p"/dashboards"}
+                  phx-click="update_path"
+                  phx-value-path="Dashboard"
+                  class={[
+                    "block px-3 py-2 text-sm rounded-md transition-colors",
+                    (if @socket.view == MyProjectWeb.DashboardLive.Index or @socket.view == MyProjectWeb.DashboardLive.Show, do: "bg-blue-300 font-semibold", else: "")
+                  ]}
+                >
+                  Dashboard
+                </a>
+              </li>
+            </ul>
+          <% else %>
+            <a
+              href={~p"/dashboards"}
+              phx-click="update_path"
+              phx-value-path="Dashboard"
+              class={
+                "flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors duration-200 " <>
+                (if @socket.view == MyProjectWeb.DashboardLive.Index or @socket.view == MyProjectWeb.DashboardLive.Show,
+                  do: "bg-blue-600 text-white border-l-4 border-blue-700",
+                  else: "text-gray-700 hover:bg-gray-100 hover:text-gray-900")
             }
           >
             <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -27,14 +82,17 @@
             </svg>
             Dashboard
           </a>
+          <% end %>
 
           <a
             href={~p"/users/settings"}
+            phx-click="update_path"
+            phx-value-path="Profile"
             class={
               "flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors duration-200 " <>
-              if @socket.view == MyProjectWeb.UserSettingsLive,
+              (if @socket.view == MyProjectWeb.UserSettingsLive,
                 do: "bg-blue-600 text-white border-l-4 border-blue-700",
-                else: "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+                else: "text-gray-700 hover:bg-gray-100 hover:text-gray-900")
             }
           >
             <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -42,54 +100,36 @@
             </svg>
             Profile
           </a>
-
-          <%= if @current_user.role == "admin" do %>
-            <button phx-click="toggle_admin_submenu" class="flex items-center justify-between w-full px-3 py-2 text-sm font-medium rounded-md transition-colors duration-200 text-gray-700 hover:bg-gray-100 hover:text-gray-900">
-              <div class="flex items-center">
-                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4" />
-                </svg>
-                Admin
-              </div>
-              <span><%= if assigns[:show_admin_submenu], do: "▲", else: "▼" %></span>
-            </button>
-
-            <ul :if={assigns[:show_admin_submenu]} class="ml-6 mt-2 space-y-1">
-              <li>
-                <a href={~p"/admin/dashboard"} class="block px-3 py-2 text-sm rounded-md hover:bg-blue-200">
-                  Admin Dashboard
-                </a>
-              </li>
-              <li>
-                <a href={~p"/admin/users"} class="block px-3 py-2 text-sm rounded-md hover:bg-blue-200">
-                  Manage Users
-                </a>
-              </li>
-            </ul>
-          <% end %>
         </nav>
 
-        <!-- Sidebar Footer -->
-        <div class="p-4 border-t border-gray-200 bg-green-200">
-          <div class="flex items-center justify-between">
-            <div class="flex items-center space-x-2">
-              <div class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
-                <span class="text-sm font-medium text-gray-700">
-                  <%= String.first(@current_user.email) %>
-                </span>
-              </div>
-              <div class="text-sm">
-                <p class="font-medium text-gray-900 truncate"><%= @current_user.email %></p>
-              </div>
-            </div>
-          </div>
-        </div>
+
               </div>
       </div>
     <% end %>
 
   <!-- Main Content -->
   <div class={if assigns[:current_user], do: "flex-1 flex flex-col overflow-hidden", else: "w-full flex flex-col overflow-hidden"}>
+    <!-- Breadcrumb/Path Display -->
+    <div :if={assigns[:current_user] && assigns[:current_path]} class="bg-white border-b border-gray-200 px-6 py-3">
+      <nav class="flex" aria-label="Breadcrumb">
+        <ol class="flex items-center space-x-2">
+          <li>
+            <a href="/" class="text-gray-400 hover:text-gray-500">
+              <svg class="h-5 w-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+              </svg>
+            </a>
+          </li>
+          <li :for={path_item <- String.split(assigns[:current_path], " > ")} class="flex items-center">
+            <svg class="h-5 w-5 flex-shrink-0 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+            </svg>
+            <span class="ml-2 text-sm font-medium text-gray-500"><%= path_item %></span>
+          </li>
+        </ol>
+      </nav>
+    </div>
+
     <main class="flex-1 overflow-y-auto bg-white-100">
       <div class="px-6 py-8">
         <div class="max-w-7xl mx-auto">

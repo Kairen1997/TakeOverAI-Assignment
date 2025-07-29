@@ -83,12 +83,21 @@ defmodule MyProjectWeb.Router do
       live "/users/settings", UserSettingsLive, :edit
       live "/users/settings/confirm_email/:token", UserSettingsLive, :confirm_email
 
-      live "/admin/dashboard", AdminDashboardLive, :index
-      live "/admin/users", AdminUsersLive, :index
-
       live "/users/dashboard", UserDashboardLive, :index
     end
 
     delete "/users/log_out", UserSessionController, :delete
+  end
+
+  # Admin routes with additional authorization
+  scope "/", MyProjectWeb do
+    pipe_through [:browser, :require_authenticated_user, :require_admin_user, :authenticated]
+
+    live_session :require_admin_user,
+      on_mount: [{MyProjectWeb.UserAuth, :ensure_authenticated}] do
+
+      live "/admin/dashboard", AdminDashboardLive, :index
+      live "/admin/users", AdminUsersLive, :index
+    end
   end
 end

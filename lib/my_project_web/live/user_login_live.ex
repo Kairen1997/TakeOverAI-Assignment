@@ -57,6 +57,6 @@ defmodule MyProjectWeb.UserLoginLive do
     end
   end
 
-  defp get_dashboard_path(%{role: "admin"}), do: "/admin/dashboards"
-  defp get_dashboard_path(_), do: "/dashboards"
+  defp get_dashboard_path(%{role: "admin"}), do: "/admin/dashboard"
+  defp get_dashboard_path(_), do: "/users/dashboard"
 end

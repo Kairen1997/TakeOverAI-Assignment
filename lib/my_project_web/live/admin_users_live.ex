@@ -4,13 +4,22 @@ defmodule MyProjectWeb.AdminUsersLive do
   alias MyProject.Accounts
 
   def mount(_params, session, socket) do
-    users = Accounts.list_users()
-    show_admin_submenu = session["show_admin_submenu"] || false
-    {:ok, assign(socket, users: users, show_admin_submenu: show_admin_submenu)}
+    # Additional safety check for admin privileges
+    if socket.assigns.current_user.role != "admin" do
+      {:halt, Phoenix.LiveView.redirect(socket, to: ~p"/")}
+    else
+      users = Accounts.list_users()
+      show_admin_submenu = session["show_admin_submenu"] || false
+      {:ok, assign(socket, users: users, show_admin_submenu: show_admin_submenu, current_path: "Admin > Manage Users")}
+    end
   end
 
     def handle_event("toggle_admin_submenu", _params, socket) do
     {:noreply, assign(socket, show_admin_submenu: !socket.assigns.show_admin_submenu)}
+  end
+
+  def handle_event("update_path", %{"path" => path}, socket) do
+    {:noreply, assign(socket, current_path: path)}
   end
 
   def handle_event("delete", %{"id" => id}, socket) do

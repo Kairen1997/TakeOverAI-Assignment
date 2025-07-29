@@ -14,11 +14,20 @@ defmodule MyProjectWeb.AdminDashboardLive do
   end
 
   def mount(_params, session, socket) do
-    show_admin_submenu = session["show_admin_submenu"] || false
-    {:ok, assign(socket, show_admin_submenu: show_admin_submenu)}
+    # Additional safety check for admin privileges
+    if socket.assigns.current_user.role != "admin" do
+      {:halt, Phoenix.LiveView.redirect(socket, to: ~p"/")}
+    else
+      show_admin_submenu = session["show_admin_submenu"] || false
+      {:ok, assign(socket, show_admin_submenu: show_admin_submenu, current_path: "Admin > Dashboard")}
+    end
   end
 
-    def handle_event("toggle_admin_submenu", _params, socket) do
+  def handle_event("toggle_admin_submenu", _params, socket) do
     {:noreply, assign(socket, show_admin_submenu: !socket.assigns.show_admin_submenu)}
+  end
+
+  def handle_event("update_path", %{"path" => path}, socket) do
+    {:noreply, assign(socket, current_path: path)}
   end
 end

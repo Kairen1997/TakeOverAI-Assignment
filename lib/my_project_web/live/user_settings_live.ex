@@ -103,6 +103,7 @@ defmodule MyProjectWeb.UserSettingsLive do
       |> assign(:password_form, to_form(password_changeset))
       |> assign(:trigger_submit, false)
       |> assign(:show_admin_submenu, false)
+      |> assign(:current_path, "Profile")
 
     {:ok, socket}
   end
@@ -172,5 +173,10 @@ defmodule MyProjectWeb.UserSettingsLive do
   @impl true
   def handle_event("toggle_admin_submenu", _params, socket) do
     {:noreply, assign(socket, show_admin_submenu: !socket.assigns[:show_admin_submenu])}
+  end
+
+  @impl true
+  def handle_event("update_path", %{"path" => path}, socket) do
+    {:noreply, assign(socket, current_path: path)}
   end
 end

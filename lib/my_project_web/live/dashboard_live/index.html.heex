@@ -30,6 +30,14 @@
   </:action>
 </.table>
 
+<.pagination
+  :if={@pagination.total_pages > 1}
+  page={@pagination.page_number}
+  total_pages={@pagination.total_pages}
+  total_entries={@pagination.total_entries}
+  page_size={@pagination.page_size}
+/>
+
 
 <.modal
   :if={@live_action in [:new, :edit]}

@@ -12,7 +12,8 @@
     </script>
   </head>
   <body class="bg-green-100">
-    <ul class="relative z-10 flex items-center gap-4 px-4 sm:px-6 lg:px-8 justify-end">
+<ul class="sticky top-0 z-50 bg-green-100 flex items-center gap-4 px-4 sm:px-6 lg:px-8 justify-end shadow">
+
       <%= if @current_user do %>
         <li>
           <div class="relative ml-3">
@@ -25,10 +26,20 @@
             >
               <span class="sr-only">Open user menu</span>
               <img
-                class="h-8 w-8 rounded-full"
+                id="user-avatar"
+                class="h-8 w-8 rounded-full cursor-pointer"
                 src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
                 alt=""
               />
+
+              <!-- Image modal -->
+              <div
+                id="image-modal"
+                style="display:none"
+                class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-80"
+              >
+                <img id="modal-img" class="max-w-4xl max-h-[90%] rounded shadow-lg" />
+              </div>
             </button>
             
 <!-- Dropdown menu -->
@@ -105,7 +116,22 @@
             }
           });
         }
+        const avatar = document.getElementById("user-avatar");
+        const modal = document.getElementById("image-modal");
+        const modalImg = document.getElementById("modal-img");
+
+        if (avatar && modal && modalImg) {
+          avatar.addEventListener("dblclick", () => {
+            modal.style.display = "flex";
+            modalImg.src = avatar.src;
+          });
+
+          modal.addEventListener("click", () => {
+            modal.style.display = "none";
+          });
+        }
       });
     </script>
+
   </body>
 </html>

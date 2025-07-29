@@ -22,6 +22,38 @@ defmodule MyProject.Dashboards do
   end
 
   @doc """
+  Returns a paginated list of dashboards.
+
+  ## Examples
+
+      iex> list_dashboards_paginated(%{page: 1, per_page: 10})
+      %{entries: [%Dashboard{}, ...], page_number: 1, page_size: 10, total_entries: 100, total_pages: 10}
+
+  """
+  def list_dashboards_paginated(params \\ %{}) do
+    page = Map.get(params, :page, 1)
+    per_page = Map.get(params, :per_page, 5)
+    offset = (page - 1) * per_page
+
+    total_entries = Repo.aggregate(Dashboard, :count, :id)
+    total_pages = ceil(total_entries / per_page)
+
+    entries = Dashboard
+    |> order_by([d], [desc: d.inserted_at])
+    |> limit(^per_page)
+    |> offset(^offset)
+    |> Repo.all()
+
+    %{
+      entries: entries,
+      page_number: page,
+      page_size: per_page,
+      total_entries: total_entries,
+      total_pages: total_pages
+    }
+  end
+
+  @doc """
   Gets a single dashboard.
 
   Raises `Ecto.NoResultsError` if the Dashboard does not exist.

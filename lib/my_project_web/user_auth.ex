@@ -230,15 +230,16 @@ defmodule MyProjectWeb.UserAuth do
     end
   end
 
-  def admin_only(conn, _opts) do
-    user = conn.assigns[:current_user]
-
-    if user && user.role == "admin" do
+  @doc """
+  Used for routes that require the user to be an admin.
+  """
+  def require_admin_user(conn, _opts) do
+    if conn.assigns[:current_user] && conn.assigns.current_user.role == "admin" do
       conn
     else
       conn
       |> put_flash(:error, "You must be an admin to access this page.")
-      |> redirect(to: "/")
+      |> redirect(to: ~p"/")
       |> halt()
     end
   end
