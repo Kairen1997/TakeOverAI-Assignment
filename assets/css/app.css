@@ -3,3 +3,36 @@
 @import "tailwindcss/utilities";
 
 /* This file is for your main application CSS */
+
+/* Burger menu styles for all devices */
+#sidebar {
+  transform: translateX(-100%);
+}
+
+#sidebar.translate-x-0 {
+  transform: translateX(0);
+}
+
+#menu-overlay {
+  transition: opacity 0.3s ease-in-out;
+}
+
+#menu-overlay.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+#menu-overlay:not(.hidden) {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Ensure smooth transitions */
+#sidebar {
+  transition: transform 0.3s ease-in-out;
+}
+
+/* Prevent body scroll when menu is open */
+body.menu-open {
+  overflow: hidden;
+}

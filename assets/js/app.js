@@ -22,10 +22,90 @@ import {Socket} from "phoenix"
 import {LiveSocket} from "phoenix_live_view"
 import topbar from "../vendor/topbar"
 
+// Burger menu hooks
+const BurgerMenuHooks = {
+  mounted() {
+    this.sidebar = this.el.querySelector("#sidebar")
+    this.overlay = this.el.querySelector("#menu-overlay")
+    this.isOpen = false
+
+    // Handle burger menu toggle
+    const toggleButton = this.el.querySelector('[data-action="toggle-menu"]')
+    if (toggleButton) {
+      toggleButton.addEventListener("click", (e) => {
+        e.preventDefault()
+        e.stopPropagation()
+        this.toggleMenu()
+      })
+    }
+
+    // Handle burger menu close
+    const closeButtons = this.el.querySelectorAll('[data-action="close-menu"]')
+    closeButtons.forEach(button => {
+      button.addEventListener("click", (e) => {
+        e.preventDefault()
+        e.stopPropagation()
+        this.closeMenu()
+      })
+    })
+
+    // Close menu when clicking outside
+    if (this.overlay) {
+      this.overlay.addEventListener("click", () => {
+        this.closeMenu()
+      })
+    }
+
+    // Close menu on escape key
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && this.isOpen) {
+        this.closeMenu()
+      }
+    })
+
+    // Close menu when clicking on navigation links
+    const navLinks = this.el.querySelectorAll("nav a")
+    navLinks.forEach(link => {
+      link.addEventListener("click", () => {
+        this.closeMenu()
+      })
+    })
+  },
+
+  toggleMenu() {
+    if (this.isOpen) {
+      this.closeMenu()
+    } else {
+      this.openMenu()
+    }
+  },
+
+  openMenu() {
+    if (this.sidebar && this.overlay) {
+      this.sidebar.classList.remove("-translate-x-full")
+      this.sidebar.classList.add("translate-x-0")
+      this.overlay.classList.remove("hidden")
+      this.isOpen = true
+    }
+  },
+
+  closeMenu() {
+    if (this.sidebar && this.overlay) {
+      this.sidebar.classList.remove("translate-x-0")
+      this.sidebar.classList.add("-translate-x-full")
+      this.overlay.classList.add("hidden")
+      this.isOpen = false
+    }
+  }
+}
+
 let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
 let liveSocket = new LiveSocket("/live", Socket, {
   longPollFallbackMs: 2500,
-  params: {_csrf_token: csrfToken}
+  params: {_csrf_token: csrfToken},
+  hooks: {
+    BurgerMenu: BurgerMenuHooks
+  }
 })
 
 // Show progress bar on live navigation and form submits

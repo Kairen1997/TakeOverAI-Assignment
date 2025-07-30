@@ -1,18 +1,47 @@
-<div class="flex h-screen bg-gray-50">
+<div id="burger-menu-container" class="flex h-screen bg-gray-50" phx-hook="BurgerMenu">
   <%= if assigns[:current_user] do %>
+    <!-- Burger Menu Button - Always Visible -->
+    <div class="fixed top-4 left-4 z-50">
+      <button 
+        data-action="toggle-menu"
+        class="p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500"
+        aria-label="Toggle menu"
+      >
+        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Menu Overlay -->
+    <div id="menu-overlay" class="fixed inset-0 z-40 bg-gray-600 bg-opacity-75 hidden" data-action="close-menu"></div>
+
     <!-- Sidebar -->
-    <div class="w-64 shadow-lg border-r border-blue-200">
-      <div class="flex flex-col h-full">
+    <div id="sidebar" class={[
+      "fixed inset-y-0 left-0 z-40 w-64 transform transition-transform duration-300 ease-in-out",
+      "-translate-x-full"
+    ]}>
+      <div class="flex flex-col h-full bg-white shadow-xl">
         <!-- Sidebar Header -->
-        <div class="flex items-center justify-center h-16 px-4 border-b border-gray-200 bg-yellow-100">
+        <div class="flex items-center justify-between h-16 px-4 border-b border-gray-200 bg-yellow-100">
           <a href="/" class="flex items-center space-x-2">
             <img src={~p"/images/logo.svg"} width="24" />
             <span class="text-lg font-semibold text-gray-900">MyProject</span>
           </a>
+          <!-- Close button -->
+          <button 
+            data-action="close-menu"
+            class="p-1 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+            aria-label="Close menu"
+          >
+            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
         </div>
 
         <!-- Sidebar Navigation -->
-        <nav class="flex-1 px-4 py-6 space-y-2 bg-blue-100">
+        <nav class="flex-1 px-4 py-6 space-y-2 bg-blue-100 overflow-y-auto">
           <%= if @current_user.role == "admin" do %>
             <a
               href={~p"/admin/dashboard"}
@@ -100,15 +129,15 @@
             </svg>
             Profile
           </a>
+
+
         </nav>
-
-
-              </div>
       </div>
-    <% end %>
+    </div>
+  <% end %>
 
   <!-- Main Content -->
-  <div class={if assigns[:current_user], do: "flex-1 flex flex-col overflow-hidden", else: "w-full flex flex-col overflow-hidden"}>
+  <div class="w-full flex flex-col overflow-hidden">
     <!-- Breadcrumb/Path Display -->
     <div :if={assigns[:current_user] && assigns[:current_path]} class="bg-white border-b border-gray-200 px-6 py-3">
       <nav class="flex" aria-label="Breadcrumb">
