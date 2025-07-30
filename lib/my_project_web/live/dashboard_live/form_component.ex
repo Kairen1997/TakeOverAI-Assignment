@@ -21,6 +21,7 @@ defmodule MyProjectWeb.DashboardLive.FormComponent do
       >
         <.input field={@form[:title]} type="text" label="Title" />
         <.input field={@form[:description]} type="text" label="Description" />
+        <.input field={@form[:status]} type="select" label="Status" options={[{"Active", "active"}, {"Inactive", "inactive"}]} />
         <:actions>
           <.button phx-disable-with="Saving...">Save Dashboard</.button>
         </:actions>

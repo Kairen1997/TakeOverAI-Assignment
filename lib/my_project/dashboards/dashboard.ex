@@ -4,6 +4,7 @@ defmodule MyProject.Dashboards.Dashboard do
 
   schema "dashboards" do
     field :description, :string
+    field :status, :string, default: "active"
     field :title, :string
 
     timestamps(type: :utc_datetime)
@@ -12,7 +13,8 @@ defmodule MyProject.Dashboards.Dashboard do
   @doc false
   def changeset(dashboard, attrs) do
     dashboard
-    |> cast(attrs, [:title, :description])
-    |> validate_required([:title, :description])
+    |> cast(attrs, [:title, :description, :status])
+    |> validate_required([:title, :description, :status])
+    |> validate_inclusion(:status, ["active", "inactive"])
   end
 end
