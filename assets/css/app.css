@@ -36,3 +36,25 @@
 body.menu-open {
   overflow: hidden;
 }
+
+/* Sticky burger menu button - completely fixed and non-movable */
+[data-action="toggle-menu"] {
+  position: fixed !important;
+  top: 1rem !important;
+  left: 1rem !important;
+  z-index: 9999 !important;
+  pointer-events: auto !important;
+  background: white !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+  border: 1px solid #e5e7eb !important;
+  border-radius: 0.375rem !important;
+}
+
+/* Ensure the button container is also fixed */
+.fixed.top-4.left-4 {
+  position: fixed !important;
+  top: 1rem !important;
+  left: 1rem !important;
+  z-index: 9999 !important;
+  pointer-events: auto !important;
+}

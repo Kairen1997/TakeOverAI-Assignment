@@ -2,21 +2,9 @@
 // to get started and then uncomment the line below.
 // import "./user_socket.js"
 
-// You can include dependencies in two ways.
-//
-// The simplest option is to put them in assets/vendor and
-// import them using relative paths:
-//
-//     import "../vendor/some-package.js"
-//
-// Alternatively, you can `npm install some-package --prefix assets` and import
-// them using a path starting with the package name:
-//
-//     import "some-package"
-//
-
 // Include phoenix_html to handle method=PUT/DELETE in forms and buttons.
 import "phoenix_html"
+
 // Establish Phoenix Socket and LiveView configuration.
 import {Socket} from "phoenix"
 import {LiveSocket} from "phoenix_live_view"
@@ -39,7 +27,7 @@ const BurgerMenuHooks = {
       })
     }
 
-    // Handle burger menu close
+    // Handle explicit close buttons (e.g., overlay, X button)
     const closeButtons = this.el.querySelectorAll('[data-action="close-menu"]')
     closeButtons.forEach(button => {
       button.addEventListener("click", (e) => {
@@ -49,35 +37,51 @@ const BurgerMenuHooks = {
       })
     })
 
-    // Close menu when clicking outside
+    // Prevent menu from closing when clicking on navigation links within the sidebar
+    const sidebarLinks = this.sidebar.querySelectorAll('a, button')
+    sidebarLinks.forEach(link => {
+      // Only prevent closing for links that don't have data-action="close-menu"
+      if (!link.hasAttribute('data-action') || link.getAttribute('data-action') !== 'close-menu') {
+        link.addEventListener("click", (e) => {
+          // Allow toggle buttons and other interactive elements to work normally
+          // Only prevent menu closure for navigation links (href attributes)
+          if (link.tagName === 'A' && link.hasAttribute('href')) {
+            // For navigation links, stop propagation but don't prevent default
+            e.stopPropagation()
+            // Don't close the menu for navigation links
+          }
+          // For buttons (like toggle buttons), allow them to work normally
+          // Don't prevent default or stop propagation for buttons
+        })
+      }
+    })
+
+    // Close menu when clicking outside via overlay
     if (this.overlay) {
       this.overlay.addEventListener("click", () => {
         this.closeMenu()
       })
     }
 
-    // Close menu on escape key
+    // Close menu on Escape key
     document.addEventListener("keydown", (e) => {
       if (e.key === "Escape" && this.isOpen) {
         this.closeMenu()
       }
     })
 
-    // Close menu when clicking on navigation links
-    const navLinks = this.el.querySelectorAll("nav a")
-    navLinks.forEach(link => {
-      link.addEventListener("click", () => {
-        this.closeMenu()
-      })
+    // Prevent LiveView from closing the menu during navigation
+    this.handleEvent("phx:page-loading-start", () => {
+      // Don't close menu on page loading
+    })
+
+    this.handleEvent("phx:page-loading-stop", () => {
+      // Don't close menu on page loading stop
     })
   },
 
   toggleMenu() {
-    if (this.isOpen) {
-      this.closeMenu()
-    } else {
-      this.openMenu()
-    }
+    this.isOpen ? this.closeMenu() : this.openMenu()
   },
 
   openMenu() {
@@ -113,12 +117,8 @@ topbar.config({barColors: {0: "#29d"}, shadowColor: "rgba(0, 0, 0, .3)"})
 window.addEventListener("phx:page-loading-start", _info => topbar.show(300))
 window.addEventListener("phx:page-loading-stop", _info => topbar.hide())
 
-// connect if there are any LiveViews on the page
+// Connect if there are any LiveViews on the page
 liveSocket.connect()
 
-// expose liveSocket on window for web console debug logs and latency simulation:
-// >> liveSocket.enableDebug()
-// >> liveSocket.enableLatencySim(1000)  // enabled for duration of browser session
-// >> liveSocket.disableLatencySim()
+// Expose liveSocket on window for debug
 window.liveSocket = liveSocket
-

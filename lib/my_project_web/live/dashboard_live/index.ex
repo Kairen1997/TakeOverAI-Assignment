@@ -10,6 +10,7 @@ defmodule MyProjectWeb.DashboardLive.Index do
       socket
       |> assign(:show_admin_submenu, false)
       |> assign(:current_path, "Dashboard")
+      |> assign(:filter_status, nil)
     {:ok, socket}
   end
 
@@ -35,20 +36,43 @@ defmodule MyProjectWeb.DashboardLive.Index do
   defp apply_action(socket, :index, params) do
     page = String.to_integer(Map.get(params, "page", "1"))
     per_page = String.to_integer(Map.get(params, "per_page", "5"))
+    raw_status = Map.get(params, "status", socket.assigns[:filter_status])
+    filter_status = if raw_status == "", do: nil, else: raw_status
 
-    pagination = Dashboards.list_dashboards_paginated(%{page: page, per_page: per_page})
+    pagination = Dashboards.list_dashboards_paginated(%{
+      page: page,
+      per_page: per_page,
+      status: filter_status
+    })
 
     socket
     |> assign(:page_title, "Listing Dashboards")
     |> assign(:dashboard, nil)
     |> assign(:pagination, pagination)
     |> assign(:current_path, "Dashboard")
+    |> assign(:filter_status, filter_status)
     |> stream(:dashboards, pagination.entries, reset: true)
   end
 
   @impl true
-  def handle_info({MyProjectWeb.DashboardLive.FormComponent, {:saved, dashboard}}, socket) do
-    {:noreply, stream_insert(socket, :dashboards, dashboard)}
+  def handle_info({MyProjectWeb.DashboardLive.FormComponent, {:saved, _dashboard}}, socket) do
+
+    page = 1
+    per_page = 5
+    filter_status = socket.assigns[:filter_status]
+
+    pagination = Dashboards.list_dashboards_paginated(%{
+      page: page,
+      per_page: per_page,
+      status: filter_status
+    })
+
+    socket =
+      socket
+      |> assign(:pagination, pagination)
+      |> stream(:dashboards, pagination.entries, reset: true)
+
+    {:noreply, socket}
   end
 
   @impl true
@@ -67,5 +91,11 @@ defmodule MyProjectWeb.DashboardLive.Index do
   @impl true
   def handle_event("update_path", %{"path" => path}, socket) do
     {:noreply, assign(socket, current_path: path)}
+  end
+
+  @impl true
+  def handle_event("filter", %{"status" => status}, socket) do
+    status = if status == "", do: nil, else: status
+    {:noreply, push_patch(socket, to: ~p"/dashboards?#{%{status: status, page: 1}}")}
   end
 end

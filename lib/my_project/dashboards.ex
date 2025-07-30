@@ -33,12 +33,21 @@ defmodule MyProject.Dashboards do
   def list_dashboards_paginated(params \\ %{}) do
     page = Map.get(params, :page, 1)
     per_page = Map.get(params, :per_page, 5)
+    status = Map.get(params, :status)
     offset = (page - 1) * per_page
 
-    total_entries = Repo.aggregate(Dashboard, :count, :id)
+    base_query = Dashboard
+
+    filtered_query = if status do
+      base_query |> where([d], d.status == ^status)
+    else
+      base_query
+    end
+
+    total_entries = Repo.aggregate(filtered_query, :count, :id)
     total_pages = ceil(total_entries / per_page)
 
-    entries = Dashboard
+    entries = filtered_query
     |> order_by([d], [desc: d.inserted_at])
     |> limit(^per_page)
     |> offset(^offset)
