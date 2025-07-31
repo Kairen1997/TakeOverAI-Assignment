@@ -33,16 +33,19 @@ defmodule MyProjectWeb.DashboardLive.Index do
     |> assign(:current_path, "Dashboard > New")
   end
 
+
   defp apply_action(socket, :index, params) do
     page = String.to_integer(Map.get(params, "page", "1"))
     per_page = String.to_integer(Map.get(params, "per_page", "5"))
     raw_status = Map.get(params, "status", socket.assigns[:filter_status])
     filter_status = if raw_status == "", do: nil, else: raw_status
+    search_query = Map.get(params, "query", socket.assigns[:search_query])
 
     pagination = Dashboards.list_dashboards_paginated(%{
       page: page,
       per_page: per_page,
-      status: filter_status
+      status: filter_status,
+      query: search_query
     })
 
     socket
@@ -51,6 +54,7 @@ defmodule MyProjectWeb.DashboardLive.Index do
     |> assign(:pagination, pagination)
     |> assign(:current_path, "Dashboard")
     |> assign(:filter_status, filter_status)
+    |> assign(:search_query, search_query)
     |> stream(:dashboards, pagination.entries, reset: true)
   end
 
@@ -60,11 +64,13 @@ defmodule MyProjectWeb.DashboardLive.Index do
     page = 1
     per_page = 5
     filter_status = socket.assigns[:filter_status]
+    search_query = socket.assigns[:search_query]
 
     pagination = Dashboards.list_dashboards_paginated(%{
       page: page,
       per_page: per_page,
-      status: filter_status
+      status: filter_status,
+      query: search_query
     })
 
     socket =
@@ -97,5 +103,20 @@ defmodule MyProjectWeb.DashboardLive.Index do
   def handle_event("filter", %{"status" => status}, socket) do
     status = if status == "", do: nil, else: status
     {:noreply, push_patch(socket, to: ~p"/dashboards?#{%{status: status, page: 1}}")}
+  end
+
+  @impl true
+  def handle_event("search", %{"_target" => _, "query" => query}, socket) do
+    search_query = if query == "", do: nil, else: query
+
+    {:noreply,
+    push_patch(socket,
+      to:
+        ~p"/dashboards?#{%{
+          status: socket.assigns.filter_status,
+          query: search_query,
+          page: 1
+        }}"
+    )}
   end
 end

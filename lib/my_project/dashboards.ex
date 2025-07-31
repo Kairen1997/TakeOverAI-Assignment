@@ -34,20 +34,18 @@ defmodule MyProject.Dashboards do
     page = Map.get(params, :page, 1)
     per_page = Map.get(params, :per_page, 5)
     status = Map.get(params, :status)
+    search_query = Map.get(params, :query)
     offset = (page - 1) * per_page
 
     base_query = Dashboard
+    |> maybe_filter_status(status)
+    |> maybe_filter_query(search_query)
 
-    filtered_query = if status do
-      base_query |> where([d], d.status == ^status)
-    else
-      base_query
-    end
 
-    total_entries = Repo.aggregate(filtered_query, :count, :id)
+    total_entries = Repo.aggregate(base_query, :count, :id)
     total_pages = ceil(total_entries / per_page)
 
-    entries = filtered_query
+    entries = base_query
     |> order_by([d], [desc: d.inserted_at])
     |> limit(^per_page)
     |> offset(^offset)
@@ -60,7 +58,16 @@ defmodule MyProject.Dashboards do
       total_entries: total_entries,
       total_pages: total_pages
     }
-  end
+end
+defp maybe_filter_status(queryable, nil), do: queryable
+defp maybe_filter_status(queryable, status),
+  do: from(d in queryable, where: d.status == ^status)
+
+defp maybe_filter_query(queryable, nil), do: queryable
+defp maybe_filter_query(queryable, query) do
+  from d in queryable,
+    where: ilike(d.title, ^"%#{query}%")
+end
 
   @doc """
   Gets a single dashboard.

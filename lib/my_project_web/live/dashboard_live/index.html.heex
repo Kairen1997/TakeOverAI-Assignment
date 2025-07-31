@@ -19,6 +19,16 @@
   </form>
 </div>
 
+<!-- Search Bar -->
+<form phx-change="search" phx-debounce="300" class="mb-6">
+  <input
+    type="text"
+    name="query"
+    value={@search_query || ""}
+    placeholder="Search dashboards..."
+    class="w-full max-w-md px-4 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+  />
+</form>
 <.table
   id="dashboards"
   rows={@streams.dashboards}
