@@ -8,11 +8,11 @@
 </.header>
 
 <!-- Status Filter -->
-<div class="mb-6 p-4 bg-gray-50 rounded-lg border">
+<div class="px-4 py-2 bg-gray-50 rounded-lg border">
   <form phx-change="filter" class="flex items-center space-x-4">
     <label class="text-sm font-medium text-gray-700">Filter by Status:</label>
-    <select name="status" class="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-      <option value="">All Dashboards</option>
+    <select name="status" class="px-9 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+      <option value=" "> All Dashboards </option>
       <option value="active" selected={@filter_status == "active"}>Active Only</option>
       <option value="inactive" selected={@filter_status == "inactive"}>Inactive Only</option>
     </select>
@@ -20,15 +20,16 @@
 </div>
 
 <!-- Search Bar -->
-<form phx-change="search" phx-debounce="300" class="mb-6">
-  <input
-    type="text"
-    name="query"
-    value={@search_query || ""}
-    placeholder="Search dashboards..."
-    class="w-full max-w-md px-4 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-  />
-</form>
+    <form phx-change="search" phx-debounce="300" class="mb-6">
+      <input
+        type="text"
+        name="query"
+        value={@search_query || ""}
+        placeholder="Search dashboards..."
+        class="w-full max-w-md px-4 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+      />
+    </form>
+
 <.table
   id="dashboards"
   rows={@streams.dashboards}
