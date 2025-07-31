@@ -9,6 +9,13 @@ defmodule MyProject.Accounts.User do
     field :current_password, :string, virtual: true, redact: true
     field :confirmed_at, :utc_datetime
     field :role, :string
+    field :full_name, :string
+    field :ic_number, :string
+    field :phone_number, :string
+    field :gender, :string
+    field :birthdate, :date
+    field :address, :string
+    field :monthly_income, :decimal
 
     timestamps(type: :utc_datetime)
   end
@@ -38,9 +45,9 @@ defmodule MyProject.Accounts.User do
   """
   def registration_changeset(user, attrs, opts \\ []) do
     user
-    |> cast(attrs, [:email, :password, :role])
+    |> cast(attrs, [:email, :password, :role, :full_name])
     |> validate_inclusion(:role, ["user", "admin"])
-    |> validate_required([:email, :password, :role])
+    |> validate_required([:email, :password, :role, :full_name])
     |> validate_email(opts)
     |> validate_password(opts)
   end
@@ -121,6 +128,19 @@ defmodule MyProject.Accounts.User do
     |> cast(attrs, [:password])
     |> validate_confirmation(:password, message: "does not match password")
     |> validate_password(opts)
+  end
+
+  @doc """
+  A user changeset for updating profile information.
+  """
+  def profile_changeset(user, attrs) do
+    user
+    |> cast(attrs, [:full_name, :ic_number, :phone_number, :gender, :birthdate, :address, :monthly_income])
+    |> validate_required([:full_name, :ic_number, :phone_number, :gender, :birthdate, :address, :monthly_income])
+    |> validate_inclusion(:gender, ["male", "female", "other"])
+    |> validate_format(:phone_number, ~r/^\+?[0-9\s\-\(\)]+$/, message: "must be a valid phone number")
+    |> validate_format(:ic_number, ~r/^[0-9]{12}$/, message: "must be exactly 12 digits")
+    |> validate_number(:monthly_income, greater_than: 0, message: "must be greater than 0")
   end
 
   @doc """

@@ -12,6 +12,7 @@
 
 # Create sample dashboards
 alias MyProject.Dashboards
+alias MyProject.Accounts
 
 # Create some sample dashboards with different statuses
 dashboards = [
@@ -58,5 +59,23 @@ Enum.each(dashboards, fn dashboard_attrs ->
       IO.puts("Created dashboard: #{dashboard.title} (Status: #{dashboard.status})")
     {:error, changeset} ->
       IO.puts("Failed to create dashboard: #{inspect(changeset.errors)}")
+  end
+end)
+
+# Create sample users
+users = [
+  %{
+    email: "admin@example.com",
+    password: "adminpassword123",
+    role: "admin"
+  },
+]
+
+Enum.each(users, fn user_attrs ->
+  case Accounts.register_admin(user_attrs) do
+    {:ok, user} ->
+      IO.puts("Created user: #{user.email} (Role: #{user.role})")
+    {:error, changeset} ->
+      IO.puts("Failed to create user: #{inspect(changeset.errors)}")
   end
 end)

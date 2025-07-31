@@ -82,6 +82,7 @@ defmodule MyProjectWeb.Router do
       live "/confirm", UserConfirmationInstructionsLive, :new
       live "/users/settings", UserSettingsLive, :edit
       live "/users/settings/confirm_email/:token", UserSettingsLive, :confirm_email
+      live "/users/profile", UserProfileLive, :edit
 
       live "/users/dashboard", UserDashboardLive, :index
     end
